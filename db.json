@@ -1,0 +1,49 @@
+{
+  "assets": [
+    {
+      "id": "1",
+      "name": "Mountain Landscape",
+      "type": "image",
+      "url": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4",
+      "size": "2.4 MB",
+      "modified": "2024-03-10",
+      "favorite": true
+    },
+    {
+      "id": "2",
+      "name": "Project Brief",
+      "type": "document",
+      "url": "#",
+      "size": "145 KB",
+      "modified": "2024-03-09",
+      "favorite": false
+    },
+    {
+      "id": "3",
+      "name": "Urban Architecture",
+      "type": "image",
+      "url": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab",
+      "size": "3.1 MB",
+      "modified": "2024-03-08",
+      "favorite": true
+    },
+    {
+      "id": "4",
+      "name": "Team Photo",
+      "type": "image",
+      "url": "https://images.unsplash.com/photo-1522071820081-009f0129c71c",
+      "size": "1.8 MB",
+      "modified": "2024-03-07",
+      "favorite": false
+    },
+    {
+      "id": "5",
+      "name": "Product Specifications",
+      "type": "document",
+      "url": "#",
+      "size": "280 KB",
+      "modified": "2024-03-06",
+      "favorite": false
+    }
+  ]
+}
