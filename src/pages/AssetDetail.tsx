@@ -7,6 +7,7 @@ export function AssetDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
 
+  // Fetch asset data
   const { data: asset, isLoading, error } = useQuery<Asset>({
     queryKey: ['asset', id],
     queryFn: async () => {
