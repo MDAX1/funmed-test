@@ -53,9 +53,9 @@ The server is running at `http://localhost:3001`
 
 ### 3. Data fetching and mutations
 
-- Implement React Query data fetching
-- Add loading states and error handling
-- Add and remove asset favorites
+- [x] Implement React Query data fetching
+- [x] Add loading states and error handling
+- [x] Add and remove asset favorites
 
 ### 4. UI/UX Improvements
 
