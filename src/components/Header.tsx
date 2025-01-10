@@ -1,6 +1,25 @@
-import { Search, Upload, Bell } from "lucide-react";
+import { Search, Upload, Bell, SortAsc, SortDesc } from "lucide-react";
+import { useSearch } from "../contexts/SearchContext";
 
 export default function Header() {
+  const { 
+    searchQuery, 
+    setSearchQuery,
+    sortField,
+    setSortField,
+    sortOrder,
+    setSortOrder
+  } = useSearch();
+
+  const toggleSort = (field: 'name' | 'date' | 'size') => {
+    if (sortField === field) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortOrder('asc');
+    }
+  };
+
   return (
     <header className="border-gray-200 bg-white px-6 py-4 border-b">
       <div className="flex justify-between items-center">
@@ -11,10 +30,30 @@ export default function Header() {
               <Search className="top-1/2 left-3 absolute w-5 h-5 text-gray-400 -translate-y-1/2" />
               <input
                 type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search assets..."
                 className="border-gray-300 py-2 pr-4 pl-10 border focus:border-transparent rounded-lg focus:ring-2 focus:ring-blue-500 w-full focus:outline-none"
               />
             </div>
+          </div>
+          <div className="flex ml-4 space-x-2">
+            {(['name', 'date', 'size'] as const).map((field) => (
+              <button
+                key={field}
+                onClick={() => toggleSort(field)}
+                className={`px-3 py-1 rounded ${
+                  sortField === field ? 'bg-gray-200' : 'hover:bg-gray-100'
+                }`}
+              >
+                <span className="flex items-center">
+                  {field.charAt(0).toUpperCase() + field.slice(1)}
+                  {sortField === field && (
+                    sortOrder === 'asc' ? <SortAsc className="w-4 h-4 ml-1" /> : <SortDesc className="w-4 h-4 ml-1" />
+                  )}
+                </span>
+              </button>
+            ))}
           </div>
         </div>
 
