@@ -1,16 +1,13 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useCallback } from 'react';
 import { Asset } from '../types';
-
-type SortField = 'name' | 'date' | 'size';
-type SortOrder = 'asc' | 'desc';
 
 interface SearchContextType {
   searchQuery: string;
   setSearchQuery: (query: string) => void;
-  sortField: SortField;
-  setSortField: (field: SortField) => void;
-  sortOrder: SortOrder;
-  setSortOrder: (order: SortOrder) => void;
+  sortField: 'name' | 'date' | 'size';
+  setSortField: (field: 'name' | 'date' | 'size') => void;
+  sortOrder: 'asc' | 'desc';
+  setSortOrder: (order: 'asc' | 'desc') => void;
   filterAssets: (assets: Asset[]) => Asset[];
 }
 
@@ -18,62 +15,59 @@ const SearchContext = createContext<SearchContextType | undefined>(undefined);
 
 export function SearchProvider({ children }: { children: React.ReactNode }) {
   const [searchQuery, setSearchQuery] = useState('');
-  const [sortField, setSortField] = useState<SortField>('name');
-  const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
+  const [sortField, setSortField] = useState<'name' | 'date' | 'size'>('name');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
-  const filterAssets = (assets: Asset[]) => {
-    console.log('Original assets:', assets);
-    let filtered = assets;
+  // Function to filter and sort assets based on search query and sort settings
+  const filterAssets = useCallback((assets: Asset[]) => {
+    // First filter based on search query
+    let filtered = assets.filter(asset => 
+      asset.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
-    if (searchQuery.trim()) {
-      filtered = assets.filter(asset => {
-        const assetName = asset.name.toLowerCase();
-        const query = searchQuery.trim().toLowerCase();
-        console.log(`Comparing: ${assetName} with ${query}`);
-        return assetName.includes(query);
-      });
-    }
-
-    console.log('Filtered assets:', filtered);
-    return [...filtered].sort((a, b) => {
-      let compareA: string | number;
-      let compareB: string | number;
+    // Then sort the filtered results
+    filtered.sort((a, b) => {
+      let compareValueA: string | number;
+      let compareValueB: string | number;
 
       switch (sortField) {
         case 'name':
-          compareA = a.name.toLowerCase();
-          compareB = b.name.toLowerCase();
+          compareValueA = a.name.toLowerCase();
+          compareValueB = b.name.toLowerCase();
           break;
         case 'date':
-          compareA = new Date(a.modified).getTime();
-          compareB = new Date(b.modified).getTime();
+          compareValueA = new Date(a.modified).getTime();
+          compareValueB = new Date(b.modified).getTime();
           break;
         case 'size':
-          compareA = parseFloat(a.size);
-          compareB = parseFloat(b.size);
+          // Convert size strings to numbers for comparison
+          compareValueA = parseFloat(a.size.split(' ')[0]);
+          compareValueB = parseFloat(b.size.split(' ')[0]);
           break;
         default:
           return 0;
       }
 
-      return sortOrder === 'asc' 
-        ? compareA > compareB ? 1 : -1
-        : compareA < compareB ? 1 : -1;
+      if (compareValueA < compareValueB) return sortOrder === 'asc' ? -1 : 1;
+      if (compareValueA > compareValueB) return sortOrder === 'asc' ? 1 : -1;
+      return 0;
     });
+
+    return filtered;
+  }, [searchQuery, sortField, sortOrder]);
+
+  const value = {
+    searchQuery,
+    setSearchQuery,
+    sortField,
+    setSortField,
+    sortOrder,
+    setSortOrder,
+    filterAssets
   };
 
   return (
-    <SearchContext.Provider 
-      value={{
-        searchQuery,
-        setSearchQuery,
-        sortField,
-        setSortField,
-        sortOrder,
-        setSortOrder,
-        filterAssets
-      }}
-    >
+    <SearchContext.Provider value={value}>
       {children}
     </SearchContext.Provider>
   );
@@ -81,7 +75,7 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
 
 export function useSearch() {
   const context = useContext(SearchContext);
-  if (!context) {
+  if (context === undefined) {
     throw new Error('useSearch must be used within a SearchProvider');
   }
   return context;

@@ -20,12 +20,6 @@ export default function Header() {
     }
   };
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    console.log('Search input value:', value);
-    setSearchQuery(value);
-  };
-
   return (
     <header className="border-gray-200 bg-white px-6 py-4 border-b">
       <div className="flex justify-between items-center">
@@ -37,7 +31,7 @@ export default function Header() {
               <input
                 type="text"
                 value={searchQuery}
-                onChange={handleSearchChange}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search assets..."
                 className="border-gray-300 py-2 pr-4 pl-10 border focus:border-transparent rounded-lg focus:ring-2 focus:ring-blue-500 w-full focus:outline-none"
               />
