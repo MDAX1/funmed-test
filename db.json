@@ -4,7 +4,7 @@
       "id": "1",
       "name": "Mountain Landscape",
       "type": "image",
-      "url": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4",
+      "url": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=800&q=80",
       "size": "2.4 MB",
       "modified": "2024-03-10",
       "favorite": true
@@ -22,7 +22,7 @@
       "id": "3",
       "name": "Urban Architecture",
       "type": "image",
-      "url": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab",
+      "url": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80",
       "size": "3.1 MB",
       "modified": "2024-03-08",
       "favorite": true
@@ -31,7 +31,7 @@
       "id": "4",
       "name": "Team Photo",
       "type": "image",
-      "url": "https://images.unsplash.com/photo-1522071820081-009f0129c71c",
+      "url": "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80",
       "size": "1.8 MB",
       "modified": "2024-03-07",
       "favorite": false
