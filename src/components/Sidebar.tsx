@@ -13,7 +13,6 @@ import { cn } from '../lib/utils';
 export default function Sidebar() {
   const location = useLocation();
   
-  // Navigation items with their configurations
   const navigationItems = [
     { icon: FolderOpen, label: 'All Files', path: '/' },
     { icon: Image, label: 'Images', path: '/images' },
@@ -26,7 +25,6 @@ export default function Sidebar() {
     { icon: Trash, label: 'Trash', path: '/trash' },
   ];
 
-  // Helper function to check if a path is active
   const isActive = (path: string) => {
     if (path === '/') {
       return location.pathname === '/';
@@ -34,7 +32,6 @@ export default function Sidebar() {
     return location.pathname === path;
   };
 
-  // Common button styling with active state
   const getButtonClass = (path: string) => {
     return cn(
       'flex items-center px-3 py-2 rounded-lg w-full transition-colors',

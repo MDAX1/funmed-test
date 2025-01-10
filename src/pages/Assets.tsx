@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAssets } from '../hooks/useAssets';
 import AssetGrid from '../components/AssetGrid';
-import { Asset } from '../types';
 
 interface AssetsProps {
   type?: 'image' | 'document' | 'video';
@@ -31,10 +30,8 @@ export function Assets({ type, favorite, trash }: AssetsProps) {
     );
   }
 
-  // Filter assets based on current route and props
   let filteredAssets = assets ?? [];
   
-  // Apply filters based on route/props
   if (type) {
     filteredAssets = filteredAssets.filter(asset => asset.type === type);
   }
@@ -43,13 +40,11 @@ export function Assets({ type, favorite, trash }: AssetsProps) {
     filteredAssets = filteredAssets.filter(asset => asset.favorite);
   }
 
-  // Handle trash view (when implemented)
   if (trash) {
-    // Add trash filtering logic here when available
+
     filteredAssets = [];
   }
 
-  // Get the title based on current view
   const getTitle = () => {
     if (trash) return 'Trash';
     if (favorite) return 'Favorites';
