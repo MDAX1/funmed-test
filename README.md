@@ -31,8 +31,8 @@ The server is running at `http://localhost:3001`
 
 #### Implementation Details:
 
-- Add search functionality to the existing search input in Header component
-- Add sorting options (name, date, size)
+ [x] Add search functionality to the existing search input in Header component
+ [x] Add sorting options (name, date, size)
 
 ### 2. Routing
 
