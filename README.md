@@ -38,8 +38,8 @@ The server is running at `http://localhost:3001`
 
 #### Implementation Details:
 
-- Implement routing for sidebar navigation
-- Create routes for:
+- [x] Implement routing for sidebar navigation
+- [x] Create routes for:
   ```
   /
   /images
@@ -48,8 +48,8 @@ The server is running at `http://localhost:3001`
   /favorites
   /trash
   ```
-- Add dynamic routes for individual assets: `/asset/:id`
-- Optional: Implement breadcrumb navigation
+- [x] Add dynamic routes for individual assets: `/asset/:id`
+- [x] Optional: Implement breadcrumb navigation
 
 ### 3. Data fetching and mutations
 
