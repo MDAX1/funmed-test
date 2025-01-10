@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { useLocation } from 'react-router-dom';
 import { useAssets } from '../hooks/useAssets';
 import AssetGrid from '../components/AssetGrid';
+import { Loader2 } from "lucide-react";
 
 interface AssetsProps {
   type?: 'image' | 'document' | 'video';
@@ -11,56 +11,55 @@ interface AssetsProps {
 
 export function Assets({ type, favorite, trash }: AssetsProps) {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const { data: assets, isLoading, error } = useAssets();
-  const location = useLocation();
+  const { data: assets = [], isLoading, error } = useAssets();
+
+  console.log('Assets data:', { assets, isLoading, error }); // Debug
+
+  const getFilteredAssets = () => {
+    let filtered = [...assets];
+    
+    if (type) {
+      filtered = filtered.filter(asset => asset.type === type);
+    }
+    
+    if (favorite) {
+      filtered = filtered.filter(asset => asset.favorite);
+    }
+
+    if (trash) {
+      return [];
+    }
+
+    return filtered;
+  };
+
+  const filteredAssets = getFilteredAssets();
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-full">
-        <div className="text-gray-500">Loading assets...</div>
+      <div className="flex flex-col items-center justify-center h-64">
+        <Loader2 className="w-8 h-8 animate-spin mb-2" />
+        <p className="text-gray-500">Loading assets...</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="flex items-center justify-center h-full">
-        <div className="text-red-500">Error loading assets</div>
+      <div className="flex flex-col items-center justify-center h-64">
+        <p className="text-red-500 mb-2">Error loading assets</p>
+        <p className="text-sm text-gray-500">{error instanceof Error ? error.message : 'Unknown error'}</p>
       </div>
     );
   }
 
-  let filteredAssets = assets ?? [];
-  
-  if (type) {
-    filteredAssets = filteredAssets.filter(asset => asset.type === type);
-  }
-  
-  if (favorite) {
-    filteredAssets = filteredAssets.filter(asset => asset.favorite);
-  }
-
-  if (trash) {
-
-    filteredAssets = [];
-  }
-
-  const getTitle = () => {
-    if (trash) return 'Trash';
-    if (favorite) return 'Favorites';
-    if (type) return `${type.charAt(0).toUpperCase() + type.slice(1)}s`;
-    return 'All Files';
-  };
-
   return (
     <div className="h-full flex flex-col">
-      <div className="flex-1 overflow-hidden">
-        <AssetGrid 
-          assets={filteredAssets}
-          viewMode={viewMode}
-          setViewMode={setViewMode}
-        />
-      </div>
+      <AssetGrid 
+        assets={filteredAssets}
+        viewMode={viewMode}
+        setViewMode={setViewMode}
+      />
     </div>
   );
 }
