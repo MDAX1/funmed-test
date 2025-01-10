@@ -1,7 +1,8 @@
-import { LayoutGrid, List, MoreVertical, Star } from "lucide-react";
+import { useNavigate } from 'react-router-dom';
+import { LayoutGrid, List, MoreVertical, Star, Image as ImageIcon, FileText, Video } from "lucide-react";
 import { Asset, ViewMode } from "../types";
-import { FileText, Image, Video } from "lucide-react";
 import { useSearch } from "../contexts/SearchContext";
+import { useState } from 'react';
 
 interface AssetGridProps {
   assets: Asset[];
@@ -14,18 +15,55 @@ export default function AssetGrid({
   viewMode,
   setViewMode,
 }: AssetGridProps) {
+  const navigate = useNavigate();
   const { filterAssets } = useSearch();
   const filteredAssets = filterAssets(assets);
+
+  const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
 
   const getIcon = (type: Asset["type"]) => {
     switch (type) {
       case "image":
-        return <Image className="w-5 h-5" />;
+        return <ImageIcon className="w-8 h-8 text-gray-400" />;
       case "document":
-        return <FileText className="w-5 h-5" />;
+        return <FileText className="w-8 h-8 text-gray-400" />;
       case "video":
-        return <Video className="w-5 h-5" />;
+        return <Video className="w-8 h-8 text-gray-400" />;
     }
+  };
+
+  const handleImageError = (assetId: string) => {
+    setImageErrors(prev => ({ ...prev, [assetId]: true }));
+  };
+
+  const renderAssetPreview = (asset: Asset) => {
+    if (asset.type === "image" && asset.url && !imageErrors[asset.id]) {
+      return (
+        <div className="bg-gray-100 aspect-video relative overflow-hidden">
+          <img
+            src={asset.url}
+            alt={asset.name}
+            onError={() => handleImageError(asset.id)}
+            className="w-full h-full object-cover"
+            loading="lazy"
+          />
+        </div>
+      );
+    } else {
+      return (
+        <div className="bg-gray-100 aspect-video flex items-center justify-center">
+          {getIcon(asset.type)}
+        </div>
+      );
+    }
+  };
+
+  const handleAssetClick = (asset: Asset) => {
+    navigate(`/asset/${asset.id}`);
+  };
+
+  const handleActionClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
   };
 
   return (
@@ -56,31 +94,26 @@ export default function AssetGrid({
             {filteredAssets.map((asset) => (
               <div
                 key={asset.id}
-                className="border-gray-200 bg-white hover:shadow-lg border rounded-lg transition-shadow overflow-hidden"
+                onClick={() => handleAssetClick(asset)}
+                className="border-gray-200 bg-white hover:shadow-lg border rounded-lg transition-shadow overflow-hidden cursor-pointer"
               >
-                {asset.type === "image" ? (
-                  <div className="bg-gray-100 aspect-video">
-                    <img
-                      src={asset.url}
-                      alt={asset.name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                ) : (
-                  <div className="flex justify-center items-center bg-gray-100 aspect-video">
-                    {getIcon(asset.type)}
-                  </div>
-                )}
+                {renderAssetPreview(asset)}
                 <div className="p-4">
                   <div className="flex justify-between items-center">
                     <h3 className="font-medium text-gray-900">{asset.name}</h3>
                     <div className="flex items-center space-x-2">
-                      <button className="text-gray-400 hover:text-yellow-500">
+                      <button 
+                        className="text-gray-400 hover:text-yellow-500"
+                        onClick={handleActionClick}
+                      >
                         <Star
                           className={`h-5 w-5 ${asset.favorite ? "fill-yellow-500 text-yellow-500" : ""}`}
                         />
                       </button>
-                      <button className="text-gray-400 hover:text-gray-600">
+                      <button 
+                        className="text-gray-400 hover:text-gray-600"
+                        onClick={handleActionClick}
+                      >
                         <MoreVertical className="w-5 h-5" />
                       </button>
                     </div>
@@ -99,9 +132,14 @@ export default function AssetGrid({
             {filteredAssets.map((asset, index) => (
               <div
                 key={asset.id}
-                className={`flex items-center px-6 py-4 hover:bg-gray-50 ${index !== 0 ? "border-t border-gray-200" : ""}`}
+                onClick={() => handleAssetClick(asset)}
+                className={`flex items-center px-6 py-4 hover:bg-gray-50 cursor-pointer ${
+                  index !== 0 ? "border-t border-gray-200" : ""
+                }`}
               >
-                <div className="flex-shrink-0">{getIcon(asset.type)}</div>
+                <div className="flex-shrink-0">
+                  {getIcon(asset.type)}
+                </div>
                 <div className="flex-1 ml-4">
                   <h3 className="font-medium text-gray-900 text-sm">
                     {asset.name}
@@ -113,12 +151,18 @@ export default function AssetGrid({
                   </div>
                 </div>
                 <div className="flex items-center space-x-4">
-                  <button className="text-gray-400 hover:text-yellow-500">
+                  <button 
+                    className="text-gray-400 hover:text-yellow-500"
+                    onClick={handleActionClick}
+                  >
                     <Star
                       className={`h-5 w-5 ${asset.favorite ? "fill-yellow-500 text-yellow-500" : ""}`}
                     />
                   </button>
-                  <button className="text-gray-400 hover:text-gray-600">
+                  <button 
+                    className="text-gray-400 hover:text-gray-600"
+                    onClick={handleActionClick}
+                  >
                     <MoreVertical className="w-5 h-5" />
                   </button>
                 </div>

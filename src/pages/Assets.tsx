@@ -1,8 +1,7 @@
-// src/pages/Assets.tsx
 import { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useAssets } from '../hooks/useAssets';
 import AssetGrid from '../components/AssetGrid';
-import { Asset } from '../types';
 
 interface AssetsProps {
   type?: 'image' | 'document' | 'video';
@@ -13,16 +12,24 @@ interface AssetsProps {
 export function Assets({ type, favorite, trash }: AssetsProps) {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const { data: assets, isLoading, error } = useAssets();
+  const location = useLocation();
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex items-center justify-center h-full">
+        <div className="text-gray-500">Loading assets...</div>
+      </div>
+    );
   }
 
   if (error) {
-    return <div>Error loading assets</div>;
+    return (
+      <div className="flex items-center justify-center h-full">
+        <div className="text-red-500">Error loading assets</div>
+      </div>
+    );
   }
 
-  // Filter assets based on props
   let filteredAssets = assets ?? [];
   
   if (type) {
@@ -34,16 +41,26 @@ export function Assets({ type, favorite, trash }: AssetsProps) {
   }
 
   if (trash) {
-    // Implement trash logic here when available
+
+    filteredAssets = [];
   }
 
+  const getTitle = () => {
+    if (trash) return 'Trash';
+    if (favorite) return 'Favorites';
+    if (type) return `${type.charAt(0).toUpperCase() + type.slice(1)}s`;
+    return 'All Files';
+  };
+
   return (
-    <div>
-      <AssetGrid 
-        assets={filteredAssets}
-        viewMode={viewMode}
-        setViewMode={setViewMode}
-      />
+    <div className="h-full flex flex-col">
+      <div className="flex-1 overflow-hidden">
+        <AssetGrid 
+          assets={filteredAssets}
+          viewMode={viewMode}
+          setViewMode={setViewMode}
+        />
+      </div>
     </div>
   );
 }
