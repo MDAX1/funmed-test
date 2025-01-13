@@ -1,4 +1,4 @@
-import { Search, Upload, Sun, Moon } from "lucide-react";
+import { Search, Upload, Sun, Moon, SortAsc, SortDesc } from "lucide-react";
 import { useSearch } from "../contexts/SearchContext";
 import { useTheme } from "../contexts/ThemeContext";
 import { Tooltip } from "./Tooltip";
@@ -13,12 +13,21 @@ export default function Header() {
     setSortOrder
   } = useSearch();
   
-  // Import theme context to manage dark/light mode
   const { theme, toggleTheme } = useTheme();
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchQuery(value);
+  };
+
+  // Add toggle sort function
+  const toggleSort = (field: 'name' | 'date' | 'size') => {
+    if (sortField === field) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortOrder('asc');
+    }
   };
 
   return (
@@ -45,14 +54,19 @@ export default function Header() {
             {(['name', 'date', 'size'] as const).map((field) => (
               <button
                 key={field}
-                onClick={() => setSortField(field)}
-                className={`px-3 py-1 rounded ${
+                onClick={() => toggleSort(field)}
+                className={`px-3 py-1 rounded flex items-center space-x-1 ${
                   sortField === field 
                     ? 'bg-gray-200 dark:bg-gray-700' 
                     : 'hover:bg-gray-100 dark:hover:bg-gray-700'
                 } dark:text-gray-200`}
               >
-                {field.charAt(0).toUpperCase() + field.slice(1)}
+                <span>{field.charAt(0).toUpperCase() + field.slice(1)}</span>
+                {sortField === field && (
+                  sortOrder === 'asc' ? 
+                    <SortAsc className="w-4 h-4 ml-1" /> : 
+                    <SortDesc className="w-4 h-4 ml-1" />
+                )}
               </button>
             ))}
           </div>
@@ -67,7 +81,6 @@ export default function Header() {
             Upload
           </button>
           
-          {/* Theme toggle button with tooltip */}
           <Tooltip content={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}>
             <button
               onClick={toggleTheme}
