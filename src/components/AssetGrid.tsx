@@ -20,12 +20,12 @@ export default function AssetGrid({
   const { filterAssets } = useSearch();
   const favoriteAsset = useFavoriteAsset();
   
-  // Add console log to debug the assets data
+  // to debug the assets data
   console.log('Incoming assets:', assets);
   
   const filteredAssets = filterAssets(assets);
   
-  // Add console log to debug filtered assets
+  // to debug filtered assets
   console.log('Filtered assets:', filteredAssets);
 
   const getIcon = (type: Asset["type"]) => {

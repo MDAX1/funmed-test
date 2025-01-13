@@ -2,7 +2,6 @@
 import { useState } from 'react';
 import { useAssets } from '../hooks/useAssets';
 import AssetGrid from '../components/AssetGrid';
-import { Asset } from '../types';
 
 interface AssetsProps {
   type?: 'image' | 'document' | 'video';
@@ -14,10 +13,9 @@ export function Assets({ type, favorite, trash }: AssetsProps) {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const { data: assets = [], isLoading, error } = useAssets();
 
-  // Add debugging logs
+  // debugging logs
   console.log('Assets page data:', { assets, isLoading, error });
 
-  // Filter assets based on props
   const getFilteredAssets = () => {
     let filtered = [...assets];
     
@@ -30,7 +28,6 @@ export function Assets({ type, favorite, trash }: AssetsProps) {
     }
 
     if (trash) {
-      // Implement trash logic here when available
       return [];
     }
 
@@ -39,7 +36,7 @@ export function Assets({ type, favorite, trash }: AssetsProps) {
 
   const filteredAssets = getFilteredAssets();
 
-  // Add debugging log for filtered assets
+  // debugging log for filtered assets
   console.log('Filtered assets:', filteredAssets);
 
   return (
