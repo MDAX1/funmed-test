@@ -59,7 +59,7 @@ The server is running at `http://localhost:3001`
 
 ### 4. UI/UX Improvements
 
-- Add dark mode support
-- Implement skeleton loading states
-- Add tooltips and better hover states
-- Improve accessibility
+- [x] Add dark mode support
+- [x] Implement skeleton loading states
+- [x] Add tooltips and better hover states
+- [x] Improve accessibility

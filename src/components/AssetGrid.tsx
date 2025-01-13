@@ -1,4 +1,3 @@
-// src/components/AssetGrid.tsx
 import { useNavigate } from 'react-router-dom';
 import { LayoutGrid, List, MoreVertical, Star } from "lucide-react";
 import { Asset, ViewMode } from "../types";
@@ -20,9 +19,14 @@ export default function AssetGrid({
   const navigate = useNavigate();
   const { filterAssets } = useSearch();
   const favoriteAsset = useFavoriteAsset();
+  
+  // to debug the assets data
+  console.log('Incoming assets:', assets);
+  
   const filteredAssets = filterAssets(assets);
-
-  console.log('AssetGrid filtered assets:', filteredAssets); // Debugging log
+  
+  // to debug filtered assets
+  console.log('Filtered assets:', filteredAssets);
 
   const getIcon = (type: Asset["type"]) => {
     switch (type) {
@@ -34,30 +38,6 @@ export default function AssetGrid({
         return <Video className="w-5 h-5" />;
     }
   };
-
-  const handleAssetClick = (asset: Asset) => {
-    navigate(`/asset/${asset.id}`);
-  };
-
-  const handleFavoriteClick = async (e: React.MouseEvent, asset: Asset) => {
-    e.stopPropagation();
-    try {
-      await favoriteAsset.mutateAsync({
-        id: asset.id,
-        favorite: !asset.favorite,
-      });
-    } catch (error) {
-      console.error('Failed to update favorite status:', error);
-    }
-  };
-
-  if (filteredAssets.length === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center h-64">
-        <p className="text-gray-500">No assets found</p>
-      </div>
-    );
-  }
 
   return (
     <div className="flex-1 overflow-auto">
@@ -87,8 +67,8 @@ export default function AssetGrid({
             {filteredAssets.map((asset) => (
               <div
                 key={asset.id}
-                onClick={() => handleAssetClick(asset)}
                 className="border-gray-200 bg-white hover:shadow-lg border rounded-lg transition-shadow overflow-hidden cursor-pointer"
+                onClick={() => navigate(`/asset/${asset.id}`)}
               >
                 {asset.type === "image" ? (
                   <div className="bg-gray-100 aspect-video">
@@ -109,14 +89,23 @@ export default function AssetGrid({
                     <h3 className="font-medium text-gray-900">{asset.name}</h3>
                     <div className="flex items-center space-x-2">
                       <button
-                        onClick={(e) => handleFavoriteClick(e, asset)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          favoriteAsset.mutate({
+                            id: asset.id,
+                            favorite: !asset.favorite,
+                          });
+                        }}
                         className="text-gray-400 hover:text-yellow-500"
                       >
                         <Star
                           className={`h-5 w-5 ${asset.favorite ? "fill-yellow-500 text-yellow-500" : ""}`}
                         />
                       </button>
-                      <button className="text-gray-400 hover:text-gray-600">
+                      <button
+                        onClick={(e) => e.stopPropagation()}
+                        className="text-gray-400 hover:text-gray-600"
+                      >
                         <MoreVertical className="w-5 h-5" />
                       </button>
                     </div>
@@ -135,10 +124,10 @@ export default function AssetGrid({
             {filteredAssets.map((asset, index) => (
               <div
                 key={asset.id}
-                onClick={() => handleAssetClick(asset)}
                 className={`flex items-center px-6 py-4 hover:bg-gray-50 cursor-pointer ${
                   index !== 0 ? "border-t border-gray-200" : ""
                 }`}
+                onClick={() => navigate(`/asset/${asset.id}`)}
               >
                 <div className="flex-shrink-0">{getIcon(asset.type)}</div>
                 <div className="flex-1 ml-4">
@@ -153,14 +142,23 @@ export default function AssetGrid({
                 </div>
                 <div className="flex items-center space-x-4">
                   <button
-                    onClick={(e) => handleFavoriteClick(e, asset)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      favoriteAsset.mutate({
+                        id: asset.id,
+                        favorite: !asset.favorite,
+                      });
+                    }}
                     className="text-gray-400 hover:text-yellow-500"
                   >
                     <Star
                       className={`h-5 w-5 ${asset.favorite ? "fill-yellow-500 text-yellow-500" : ""}`}
                     />
                   </button>
-                  <button className="text-gray-400 hover:text-gray-600">
+                  <button
+                    onClick={(e) => e.stopPropagation()}
+                    className="text-gray-400 hover:text-gray-600"
+                  >
                     <MoreVertical className="w-5 h-5" />
                   </button>
                 </div>
