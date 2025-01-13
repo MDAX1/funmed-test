@@ -1,67 +1,64 @@
 import { useNavigate } from 'react-router-dom';
 import { LayoutGrid, List, MoreVertical, Star } from "lucide-react";
 import { Asset, ViewMode } from "../types";
-import { FileText, Image, Video, Moon, Sun } from "lucide-react";
+import { FileText, Image, Video } from "lucide-react";
 import { useSearch } from "../contexts/SearchContext";
 import { useFavoriteAsset } from "../hooks/useAssets";
-import { useTheme } from "../contexts/ThemeContext";
-import { Tooltip } from "./Tooltip";
-import { AssetGridSkeleton } from "./Skeleton";
 
 interface AssetGridProps {
   assets: Asset[];
   viewMode: ViewMode;
   setViewMode: (mode: ViewMode) => void;
-  isLoading?: boolean;
 }
 
 export default function AssetGrid({
   assets,
   viewMode,
   setViewMode,
-  isLoading
 }: AssetGridProps) {
   const navigate = useNavigate();
   const { filterAssets } = useSearch();
   const favoriteAsset = useFavoriteAsset();
-  const { theme, toggleTheme } = useTheme();
+  
+  // Add console log to debug the assets data
+  console.log('Incoming assets:', assets);
+  
   const filteredAssets = filterAssets(assets);
+  
+  // Add console log to debug filtered assets
+  console.log('Filtered assets:', filteredAssets);
 
-  if (isLoading) {
-    return <AssetGridSkeleton />;
-  }
+  const getIcon = (type: Asset["type"]) => {
+    switch (type) {
+      case "image":
+        return <Image className="w-5 h-5" />;
+      case "document":
+        return <FileText className="w-5 h-5" />;
+      case "video":
+        return <Video className="w-5 h-5" />;
+    }
+  };
 
   return (
     <div className="flex-1 overflow-auto">
       <div className="p-6">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="font-semibold text-gray-900 dark:text-gray-100 text-lg">
+          <h2 className="font-semibold text-gray-900 text-lg">
             {filteredAssets.length} {filteredAssets.length === 1 ? 'File' : 'Files'}
           </h2>
           <div className="flex items-center space-x-2">
-            <Tooltip content={viewMode === 'grid' ? 'Switch to list view' : 'Switch to grid view'}>
-              <button
-                onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
-                className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 
-                          dark:hover:bg-gray-700 transition-colors"
-                aria-label={`Switch to ${viewMode === 'grid' ? 'list' : 'grid'} view`}
-              >
-                {viewMode === 'grid' ? <List className="w-5 h-5" /> : <LayoutGrid className="w-5 h-5" />}
-              </button>
-            </Tooltip>
-            <Tooltip content={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}>
-              <button
-                onClick={toggleTheme}
-                className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 
-                          dark:hover:bg-gray-700 transition-colors"
-                aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
-              >
-                {theme === 'light' ? 
-                  <Moon className="w-5 h-5" /> : 
-                  <Sun className="w-5 h-5" />
-                }
-              </button>
-            </Tooltip>
+            <button
+              onClick={() => setViewMode("grid")}
+              className={`p-2 rounded-lg ${viewMode === "grid" ? "bg-gray-200" : "hover:bg-gray-100"}`}
+            >
+              <LayoutGrid className="w-5 h-5" />
+            </button>
+            <button
+              onClick={() => setViewMode("list")}
+              className={`p-2 rounded-lg ${viewMode === "list" ? "bg-gray-200" : "hover:bg-gray-100"}`}
+            >
+              <List className="w-5 h-5" />
+            </button>
           </div>
         </div>
 
@@ -70,19 +67,103 @@ export default function AssetGrid({
             {filteredAssets.map((asset) => (
               <div
                 key={asset.id}
+                className="border-gray-200 bg-white hover:shadow-lg border rounded-lg transition-shadow overflow-hidden cursor-pointer"
                 onClick={() => navigate(`/asset/${asset.id}`)}
-                className="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 
-                         hover:shadow-lg dark:hover:shadow-gray-900 rounded-lg transition-shadow 
-                         overflow-hidden cursor-pointer focus-within:ring-2 focus-within:ring-blue-500"
-                tabIndex={0}
-                role="button"
-                aria-label={`View details of ${asset.name}`}
               >
+                {asset.type === "image" ? (
+                  <div className="bg-gray-100 aspect-video">
+                    <img
+                      src={asset.url}
+                      alt={asset.name}
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                    />
+                  </div>
+                ) : (
+                  <div className="flex justify-center items-center bg-gray-100 aspect-video">
+                    {getIcon(asset.type)}
+                  </div>
+                )}
+                <div className="p-4">
+                  <div className="flex justify-between items-center">
+                    <h3 className="font-medium text-gray-900">{asset.name}</h3>
+                    <div className="flex items-center space-x-2">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          favoriteAsset.mutate({
+                            id: asset.id,
+                            favorite: !asset.favorite,
+                          });
+                        }}
+                        className="text-gray-400 hover:text-yellow-500"
+                      >
+                        <Star
+                          className={`h-5 w-5 ${asset.favorite ? "fill-yellow-500 text-yellow-500" : ""}`}
+                        />
+                      </button>
+                      <button
+                        onClick={(e) => e.stopPropagation()}
+                        className="text-gray-400 hover:text-gray-600"
+                      >
+                        <MoreVertical className="w-5 h-5" />
+                      </button>
+                    </div>
+                  </div>
+                  <div className="flex items-center mt-2 text-gray-500 text-sm">
+                    <span>{asset.size}</span>
+                    <span className="mx-2">•</span>
+                    <span>{asset.modified}</span>
+                  </div>
+                </div>
               </div>
             ))}
           </div>
         ) : (
-          <div className="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-lg">
+          <div className="border-gray-200 bg-white border rounded-lg">
+            {filteredAssets.map((asset, index) => (
+              <div
+                key={asset.id}
+                className={`flex items-center px-6 py-4 hover:bg-gray-50 cursor-pointer ${
+                  index !== 0 ? "border-t border-gray-200" : ""
+                }`}
+                onClick={() => navigate(`/asset/${asset.id}`)}
+              >
+                <div className="flex-shrink-0">{getIcon(asset.type)}</div>
+                <div className="flex-1 ml-4">
+                  <h3 className="font-medium text-gray-900 text-sm">
+                    {asset.name}
+                  </h3>
+                  <div className="flex items-center mt-1 text-gray-500 text-sm">
+                    <span>{asset.size}</span>
+                    <span className="mx-2">•</span>
+                    <span>{asset.modified}</span>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-4">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      favoriteAsset.mutate({
+                        id: asset.id,
+                        favorite: !asset.favorite,
+                      });
+                    }}
+                    className="text-gray-400 hover:text-yellow-500"
+                  >
+                    <Star
+                      className={`h-5 w-5 ${asset.favorite ? "fill-yellow-500 text-yellow-500" : ""}`}
+                    />
+                  </button>
+                  <button
+                    onClick={(e) => e.stopPropagation()}
+                    className="text-gray-400 hover:text-gray-600"
+                  >
+                    <MoreVertical className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
         )}
       </div>

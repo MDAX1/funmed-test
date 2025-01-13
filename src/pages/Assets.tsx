@@ -1,7 +1,8 @@
+// src/pages/Assets.tsx
 import { useState } from 'react';
 import { useAssets } from '../hooks/useAssets';
 import AssetGrid from '../components/AssetGrid';
-import { Loader2 } from "lucide-react";
+import { Asset } from '../types';
 
 interface AssetsProps {
   type?: 'image' | 'document' | 'video';
@@ -13,8 +14,10 @@ export function Assets({ type, favorite, trash }: AssetsProps) {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const { data: assets = [], isLoading, error } = useAssets();
 
-  console.log('Assets data:', { assets, isLoading, error }); // Debug
+  // Add debugging logs
+  console.log('Assets page data:', { assets, isLoading, error });
 
+  // Filter assets based on props
   const getFilteredAssets = () => {
     let filtered = [...assets];
     
@@ -27,6 +30,7 @@ export function Assets({ type, favorite, trash }: AssetsProps) {
     }
 
     if (trash) {
+      // Implement trash logic here when available
       return [];
     }
 
@@ -35,23 +39,8 @@ export function Assets({ type, favorite, trash }: AssetsProps) {
 
   const filteredAssets = getFilteredAssets();
 
-  if (isLoading) {
-    return (
-      <div className="flex flex-col items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 animate-spin mb-2" />
-        <p className="text-gray-500">Loading assets...</p>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex flex-col items-center justify-center h-64">
-        <p className="text-red-500 mb-2">Error loading assets</p>
-        <p className="text-sm text-gray-500">{error instanceof Error ? error.message : 'Unknown error'}</p>
-      </div>
-    );
-  }
+  // Add debugging log for filtered assets
+  console.log('Filtered assets:', filteredAssets);
 
   return (
     <div className="h-full flex flex-col">
